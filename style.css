@@ -1,0 +1,51 @@
+* {
+  text-align: center;
+  margin-top: 10px;
+  font-family: 'Inconsolata', monospace;
+}
+ul {
+  list-style-type: none;
+  margin-left: -35px;
+}
+.main-div {
+  padding: 20px;
+  background-color: rgba(86, 165, 240, 0.747);
+}
+li {
+  text-align: start;
+  background-color: rgba(255, 255, 255, 0.952);
+  border-radius: 3px;
+  padding: 10px;
+}
+input,
+label,
+li {
+  cursor: pointer;
+}
+.btn {
+  width: 8rem;
+  padding: 10px;
+  background-color: rgba(255, 82, 82, 0.856);
+  border: none;
+  font-weight: 600;
+  color: aliceblue;
+  cursor: pointer;
+}
+.btn:hover {
+  background-color: rgba(32, 248, 68, 0.836);
+}
+.message {
+  color: red;
+  font-size: small;
+  font-weight: lighter;
+}
+/* #scoreSection {
+  background-color: #fff;
+  padding: 2rem 5rem;
+}
+.display_score {
+  display: none;
+} */
+/* .hiddenPanel {
+  visibility: hidden;
+} */
