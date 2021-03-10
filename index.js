@@ -1,13 +1,16 @@
+const mainDiv = document.querySelector('.main-div');
+const answersPage = document.querySelector('.answersPage');
 const question = document.querySelector('.question');
 const option1 = document.querySelector('#option1');
 const option2 = document.querySelector('#option2');
 const option3 = document.querySelector('#option3');
 const option4 = document.querySelector('#option4');
-const submitBtn = document.querySelector('#submit_btn');
 const answers = document.querySelectorAll('.answer');
 const messageBox = document.querySelector('.message');
 const nextBtn = document.querySelector('.next');
 const innerDiv = document.querySelector('.inner-div');
+const submitDiv = document.querySelector('.submitContainer');
+const submitButton = document.querySelector('.submitButton');
 
 let questionNo = 0;
 let pageNo = 1;
@@ -69,24 +72,78 @@ const loadQuestion = () => {
       : (questionDom = `<h1>No more questions</h1>`);
 
     innerDiv.innerHTML = questionDom;
-    // submitBtn.addEventListener('click', () => {
-    //   let checkedOption = getCheckedOption();
-    //   if (Number(checkedOption) === data.correctIndex) {
-    //     messageBox.innerText = 'Correct Answer';
-    //   } else {
-    //     messageBox.innerText = 'Wrong Answer';
-    //   }
-    // });
+    /*submitBtn.addEventListener('click', () => {
+      let checkedOption = getCheckedOption();
+      if (Number(checkedOption) === data.correctIndex) {
+        messageBox.innerText = 'Correct Answer';
+      } else {
+        messageBox.innerText = 'Wrong Answer';
+      }
+    });*/
   });
 };
 
 //CHECKED ANSWERS
 let checkedOptionsArray = [];
-//NEXT QUESTION
-const nextPage = () => {
+//CHECKING IF IT'S THE LAST PAGE OF QUESTIONS AND RENDER THE SUBMIT BUTTON INSTEAD OF NEXT BUTTON
+const checkSubmit = () => {
+  if (checkedOptionsArray.length === 8) {
+    nextBtn.style.visibility = 'hidden';
+    submitDiv.innerHTML = `<button class="btn" id="submitButton" onclick="submitHandler()">Submit</button>`;
+  }
+};
+
+//GET CORRECT OR INCORRECT ICON
+const getIcon = (userAnswer, correctAnswer) => {
+  if (userAnswer === correctAnswer) {
+    return `<i class="fas fa-check-circle" style="font-size: 1.5em; color: green;"></i>`;
+  } else {
+    return `<i class="fas fa-times-circle" style="font-size: 1.5em; color: Tomato;"></i>`;
+  }
+};
+const answerSheet = (a) => {
+  let answersheetDOM = '';
+  getData().then((allData) => {
+    allData.forEach((data, index) => {
+      answersheetDOM += `<h2>${data.number}. ${data.question}</h2>
+      <h5 style="color: blue"><span class="checkIcon">${getIcon(
+        data.answers[a[index]],
+        data.answers[data.correctIndex]
+      )}</span>   Your answer: ${data.answers[a[index]]}</h5> 
+      <h5 style="color: #69f72d">Correct answer: ${
+        data.answers[data.correctIndex]
+      }</h5>`;
+      // if (data.answers[a[index]] === data.answers[data.correctIndex]) {
+      //   document.querySelector('.checkIcon').innerText = 'Correct';
+      // } else {
+      //   document.querySelector('.checkIcon').innerText = 'Wrong';
+      // }
+    });
+    answersPage.innerHTML = answersheetDOM;
+  });
+};
+// answerSheet();
+
+//SUBMIT BUTTON HANDLER
+const submitHandler = async () => {
+  let res = await checkValidation();
+  checkedOptionsArray.push(...res);
+  if (res !== null) {
+    mainDiv.style.display = 'none';
+    answersPage.style.display = 'flex';
+    //DISPLAY THE ANSWERSHEET
+    answerSheet(checkedOptionsArray);
+  } else {
+    messageBox.innerText = 'Please answer all questions.';
+  }
+};
+
+//CHECK ALL QUESTIONS IN THE CURRENT SCREEN ARE ANSWERED OR NOT
+const checkValidation = async () => {
   let data;
   let tempArray = [];
-  getData().then((allData) => {
+
+  await getData().then((allData) => {
     data = paginate(allData, 4, pageNo);
     data.forEach((opt) => {
       const radioBtns = document.querySelectorAll(`.answer${opt.number}`);
@@ -96,16 +153,49 @@ const nextPage = () => {
         }
       });
     });
-    if (tempArray.length === 4) {
-      pageNo += 1;
-      checkedOptionsArray.push(...tempArray);
-      loadQuestion();
-    } else {
-      tempArray = [];
-      messageBox.innerText = 'Please answer all questions.';
-    }
-    console.log(checkedOptionsArray);
   });
+  if (tempArray.length === 4) {
+    return tempArray;
+  } else {
+    return null;
+  }
+};
+
+//NEXT QUESTION
+const nextPage = async () => {
+  let res = await checkValidation();
+
+  if (res !== null) {
+    pageNo += 1;
+    checkedOptionsArray.push(...res);
+    loadQuestion();
+  } else {
+    messageBox.innerText = 'Please answer all questions.';
+  }
+  checkSubmit();
+  // let data;
+  // let tempArray = [];
+  // getData().then((allData) => {
+  //   data = paginate(allData, 4, pageNo);
+  //   data.forEach((opt) => {
+  //     const radioBtns = document.querySelectorAll(`.answer${opt.number}`);
+  //     radioBtns.forEach((btn) => {
+  //       if (btn.checked) {
+  //         tempArray.push(btn.id);
+  //       }
+  //     });
+  //   });
+  //   if (tempArray.length === 4) {
+  //     pageNo += 1;
+  //     checkedOptionsArray.push(...tempArray);
+  //     loadQuestion();
+  //   } else {
+  //     tempArray = [];
+  //     messageBox.innerText = 'Please answer all questions.';
+  //   }
+  //   checkSubmit();
+  //   console.log(checkedOptionsArray);
+  // });
 };
 nextBtn.addEventListener('click', nextPage);
 
