@@ -9,6 +9,7 @@ ul {
 }
 .main-div {
   padding: 20px;
+  margin: 10px 200px;
   background-color: rgba(86, 165, 240, 0.747);
 }
 li {
@@ -43,6 +44,7 @@ li {
   display: flex;
   flex-direction: column;
   align-items: start;
+  padding: 0px;
 }
 /* #scoreSection {
   background-color: #fff;

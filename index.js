@@ -11,9 +11,12 @@ const nextBtn = document.querySelector('.next');
 const innerDiv = document.querySelector('.inner-div');
 const submitDiv = document.querySelector('.submitContainer');
 const submitButton = document.querySelector('.submitButton');
+const scoreArea = document.querySelector('.scoreArea');
 
 let questionNo = 0;
 let pageNo = 1;
+let correctAnswers = 0;
+let wrongAnswers = 0;
 
 const getData = async () => {
   try {
@@ -93,14 +96,30 @@ const checkSubmit = () => {
   }
 };
 
+//SHOW THE SCORE
+const showScore = (allData) => {
+  if (correctAnswers + wrongAnswers === allData.length) {
+    scoreArea.style.display = 'block';
+    scoreArea.innerHTML = `<h2 style="color : blue">Your score : ${correctAnswers}/${allData.length}</h2>`;
+  }
+};
+
 //GET CORRECT OR INCORRECT ICON
-const getIcon = (userAnswer, correctAnswer) => {
+const getIcon = (userAnswer, correctAnswer, allData) => {
   if (userAnswer === correctAnswer) {
+    correctAnswers += 1;
+    showScore(allData);
+
     return `<i class="fas fa-check-circle" style="font-size: 1.5em; color: green;"></i>`;
   } else {
+    wrongAnswers += 1;
+    showScore(allData);
+
     return `<i class="fas fa-times-circle" style="font-size: 1.5em; color: Tomato;"></i>`;
   }
 };
+
+//DISPLAY THE ANSWERSHEET
 const answerSheet = (a) => {
   let answersheetDOM = '';
   getData().then((allData) => {
@@ -108,7 +127,8 @@ const answerSheet = (a) => {
       answersheetDOM += `<h2>${data.number}. ${data.question}</h2>
       <h5 style="color: blue"><span class="checkIcon">${getIcon(
         data.answers[a[index]],
-        data.answers[data.correctIndex]
+        data.answers[data.correctIndex],
+        allData
       )}</span>   Your answer: ${data.answers[a[index]]}</h5> 
       <h5 style="color: #69f72d">Correct answer: ${
         data.answers[data.correctIndex]
